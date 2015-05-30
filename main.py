@@ -9,47 +9,17 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
+from util import XY
 from maze import MazeGenerator
+from player import Player
 
 clients = []
-WIDTH = 120  # blocks count
-HEIGHT = 120
-
-class Player(object):
-    speed = 0.5
-
-    def __init__(self, _id, x, y):
-        self.id = _id
-        self.x = x
-        self.y = y
-
-    def up(self):
-        if self.y - self.speed > 0:
-            self.y -= self.speed
-
-    def down(self):
-        if self.y + self.speed < HEIGHT:
-            self.y += self.speed
-
-    def left(self):
-        if self.x - self.speed > 0:
-            self.x -= self.speed
-
-    def right(self):
-        if self.x + self.speed < WIDTH:
-            self.x += self.speed
-
-    def to_json(self):
-        return json.dumps({
-            'id': unicode(self.id),
-            'x': self.x,
-            'y': self.y,
-        })
+SIZE = XY(x=120, y=120)
 
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        self.player = Player(uuid.uuid1(), WIDTH / 2, HEIGHT / 2)
+        self.player = Player(uuid.uuid1(), SIZE, XY(SIZE.x / 2, SIZE.y / 2), speed=0.5)
         clients.append(self)
         for client in clients:
             client.write_message(self.player.to_json())
@@ -80,7 +50,7 @@ settings = {
     'static_path': os.path.join(os.path.dirname(__file__), 'static'),
 }
 
-mazeGenerator = MazeGenerator(size=WIDTH)
+mazeGenerator = MazeGenerator(size=SIZE.x)
 
 application = tornado.web.Application([
     (r'/', IndexHandler),
