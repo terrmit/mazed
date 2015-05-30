@@ -9,11 +9,11 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
+from maze import MazeGenerator
 
 clients = []
 WIDTH = 120  # blocks count
 HEIGHT = 120
-
 
 class Player(object):
     speed = 0.5
@@ -70,20 +70,17 @@ class IndexHandler(tornado.web.RequestHandler):
 
 class MazeHandler(tornado.web.RequestHandler):
     def get(self):
-        from maze import MazeGenerator
-
-        m = MazeGenerator().generate()
-
         response = {
-            'size': len(m),
-            'maze': m,
+            'size': len(mazeGenerator.maze),
+            'maze': mazeGenerator.maze,
         }
         self.write(json.dumps(response))
-
 
 settings = {
     'static_path': os.path.join(os.path.dirname(__file__), 'static'),
 }
+
+mazeGenerator = MazeGenerator(size=WIDTH)
 
 application = tornado.web.Application([
     (r'/', IndexHandler),
