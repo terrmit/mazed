@@ -96,5 +96,5 @@ application = tornado.web.Application([
 
 
 if __name__ == '__main__':
-    app.listen(int(os.environ.get('PORT', '5000')))
+    application.listen(int(os.environ.get('PORT', '5000')))
     tornado.ioloop.IOLoop.instance().start()
