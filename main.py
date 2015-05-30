@@ -12,7 +12,7 @@ import tornado.websocket
 
 clients = []
 WIDTH = 600;
-HEIGHT = 400;
+HEIGHT = 600;
 
 
 class Player(object):
@@ -51,17 +51,10 @@ class Player(object):
 class Hello(tornado.websocket.WebSocketHandler):
 
     def open(self):
-        self.player = Player(uuid.uuid1(), 300, 200)
+        self.player = Player(uuid.uuid1(), WIDTH / 2, HEIGHT / 2)
         clients.append(self)
         for client in clients:
             client.write_message(self.player.to_json())
-
-        # from maze import Generate
-        # m = Generate()
-        # for row in m:
-        #     for cell in row:
-        #         print 0,
-        #     print
 
     def on_message(self, message):
         getattr(self.player, message)()    
@@ -77,9 +70,17 @@ class Main(tornado.web.RequestHandler):
         self.render('index.html')
 
 
-# class Maze(tornado.web.RequestHandler):
-#     def get(self):
-#         self.render('maze.html')
+class Maze(tornado.web.RequestHandler):
+
+    def get(self):
+        from maze import MazeGenerator
+        m = MazeGenerator().generate()
+
+        response = {
+            'size': len(m),
+            'maze': m,
+        }
+        self.write(json.dumps(response))
 
 
 settings = {
@@ -89,7 +90,7 @@ settings = {
 
 application = tornado.web.Application([
     (r'/', Main),
-    # (r'/maze', Maze),
+    (r'/maze', Maze),
     (r'/websocket', Hello),
     (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': settings['static_path']}),
 ])

@@ -7,14 +7,15 @@ if (loc.protocol === 'https:') {
 new_uri += '//' + loc.host;
 new_uri += loc.pathname + 'websocket';
 
-var socket = new WebSocket(new_uri);
+var socket;
 
 var canvas;
 var ctx;
 var dx = 5;
 var dy = 5;
 var WIDTH = 600;
-var HEIGHT = 400;
+var HEIGHT = 600;
+var cellSize;
 
 
 function circle(x,y,r) {
@@ -33,6 +34,13 @@ function rect(x,y,w,h) {
 }
 
 
+function line(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+}
+
 function clear() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 }
@@ -41,7 +49,39 @@ function clear() {
 function init() {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
-    // return setInterval(draw, 5);
+    initMaze();
+}
+
+var maze = [];
+var mazeSize = 0;
+
+function initMaze() {
+    $.get('/maze', function(data) {
+        var parsedData = JSON.parse(data);
+        maze = parsedData.maze;
+        mazeSize = parsedData.size;
+        cellSize = WIDTH / mazeSize;
+        drawMaze();
+    });
+}
+
+function drawMaze() {
+    for (var j = 0; j < maze.length; j++) {
+        for (var i = 0; i < maze[j].length; i++) {
+            if (maze[j][i].up) {
+                line(i * cellSize, j * cellSize, (i + 1) * cellSize, j * cellSize);
+            }
+            if (maze[j][i].down) {
+                line(i * cellSize, (j + 1) * cellSize, (i + 1) * cellSize, (j + 1) * cellSize);
+            }
+            if (maze[j][i].left) {
+                line(i * cellSize, j * cellSize, i * cellSize, (j + 1) * cellSize);
+            }
+            if (maze[j][i].right) {
+                line((i + 1) * cellSize, j * cellSize, (i + 1) * cellSize, (j + 1) * cellSize);
+            }
+        }
+    }
 }
 
 
@@ -73,15 +113,18 @@ function draw() {
     rect(0, 0, WIDTH, HEIGHT);
     ctx.fillStyle = 'purple';
 
+    drawMaze();
+
     for (var property in clients) {
         if (clients.hasOwnProperty(property)) {
-            circle(clients[property].x, clients[property].y, 10);
+            circle(clients[property].x, clients[property].y, cellSize / 2 - 2);
         }
     }
 }
 
 init();
 
+socket = new WebSocket(new_uri);
 
 socket.onmessage = function(event) {
     var player = JSON.parse(event.data);
