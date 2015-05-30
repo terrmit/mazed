@@ -1,4 +1,4 @@
-var socket = new WebSocket('wss://localhost:8888/websocket');
+var socket = new WebSocket('wss://localhost:5000/websocket');
 
 var canvas;
 var ctx;
