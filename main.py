@@ -11,13 +11,12 @@ import tornado.websocket
 
 
 clients = []
-WIDTH = 600;
-HEIGHT = 600;
+WIDTH = 120  # blocks count
+HEIGHT = 120
 
 
 class Player(object):
-    dx = 5
-    dy = 5
+    speed = 0.5
 
     def __init__(self, _id, x, y):
         self.id = _id
@@ -25,20 +24,20 @@ class Player(object):
         self.y = y
 
     def up(self):
-        if self.y - self.dy > 0:
-            self.y -= self.dy;
+        if self.y - self.speed > 0:
+            self.y -= self.speed
 
     def down(self):
-        if self.y + self.dy < HEIGHT:
-            self.y += self.dy;
+        if self.y + self.speed < HEIGHT:
+            self.y += self.speed
 
     def left(self):
-        if self.x - self.dx > 0:
-            self.x -= self.dx
+        if self.x - self.speed > 0:
+            self.x -= self.speed
 
     def right(self):
-        if self.x + self.dx < WIDTH:
-            self.x += self.dx
+        if self.x + self.speed < WIDTH:
+            self.x += self.speed
 
     def to_json(self):
         return json.dumps({
@@ -48,8 +47,7 @@ class Player(object):
         })
 
 
-class Hello(tornado.websocket.WebSocketHandler):
-
+class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.player = Player(uuid.uuid1(), WIDTH / 2, HEIGHT / 2)
         clients.append(self)
@@ -57,7 +55,7 @@ class Hello(tornado.websocket.WebSocketHandler):
             client.write_message(self.player.to_json())
 
     def on_message(self, message):
-        getattr(self.player, message)()    
+        getattr(self.player, message)()
         for client in clients:
             client.write_message(self.player.to_json())
 
@@ -65,15 +63,15 @@ class Hello(tornado.websocket.WebSocketHandler):
         clients.remove(self)
 
 
-class Main(tornado.web.RequestHandler):
+class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('index.html')
 
 
-class Maze(tornado.web.RequestHandler):
-
+class MazeHandler(tornado.web.RequestHandler):
     def get(self):
         from maze import MazeGenerator
+
         m = MazeGenerator().generate()
 
         response = {
@@ -87,14 +85,12 @@ settings = {
     'static_path': os.path.join(os.path.dirname(__file__), 'static'),
 }
 
-
 application = tornado.web.Application([
-    (r'/', Main),
-    (r'/maze', Maze),
-    (r'/websocket', Hello),
+    (r'/', IndexHandler),
+    (r'/maze', MazeHandler),
+    (r'/websocket', WSHandler),
     (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': settings['static_path']}),
 ])
-
 
 if __name__ == '__main__':
     application.listen(int(os.environ.get('PORT', '5000')))

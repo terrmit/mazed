@@ -14,7 +14,7 @@ class MazeGenerator(object):
 
         for i in range(self.size):
             maze.append([])
-      
+
             for j in range(self.size):
                 maze[i].append({})
                 maze[i][j]['up'] = False
@@ -27,7 +27,7 @@ class MazeGenerator(object):
                 for j in range(self.size):
                     maze[i][j]['up'] = maze[i - 1][j]['down']
             self.make_row(maze[i], i)
-        
+
         return maze
 
     def make_row(self, row, row_number):
