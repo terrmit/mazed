@@ -213,8 +213,8 @@ function draw() {
     for (var property in clients) {
         if (clients.hasOwnProperty(property)) {
             var pos = {
-                x: clients[property].x / 600 * WIDTH,
-                y: clients[property].y / 600 * HEIGHT   
+                x: clients[property].x * cellSize,
+                y: clients[property].y * cellSize   
             }
             circle(pos.x, pos.y, cellSize / 2 - 2);
         }
