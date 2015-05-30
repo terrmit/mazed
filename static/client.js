@@ -173,6 +173,20 @@ function handleKeyUp(evt) {
         clearInterval( keys[code].interval );
 }
 
+function handleWindowBlur() {
+    console.log('window blur');
+
+    for ( code in keys ) {
+        keys[code].isDown = false;
+
+        if ( keys[code].timeout )
+            clearTimeout( keys[code].timeout );
+
+        if ( keys[code].interval )
+            clearInterval( keys[code].interval );
+    }
+}
+
 function handleWindowResize() {
     var c = $('#canvas'),
         w = $(window);
@@ -237,4 +251,5 @@ socket.onmessage = function(event) {
 
 $(window).keydown( handleKeyDown );
 $(window).keyup( handleKeyUp );
+$(window).blur( handleWindowBlur );
 $(window).resize( handleWindowResize );
