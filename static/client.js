@@ -1,4 +1,13 @@
-var socket = new WebSocket('wss://localhost:5000/websocket');
+var loc = window.location, new_uri;
+if (loc.protocol === 'https:') {
+    new_uri = 'wss:';
+} else {
+    new_uri = 'ws:';
+}
+new_uri += '//' + loc.host;
+new_uri += loc.pathname + 'websocket';
+
+var socket = new WebSocket(new_uri);
 
 var canvas;
 var ctx;
