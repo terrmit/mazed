@@ -218,6 +218,7 @@ function draw() {
     clear();
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'black';
+    ctx.lineWidth = 0.4;
     rect(0, 0, WIDTH, HEIGHT);
     ctx.fillStyle = 'purple';
 
