@@ -154,7 +154,6 @@ function handleKeyDown(evt) {
 
     keys[code].timeout = setTimeout(
         function () {
-            sendKeyCode( code );
             keys[code].interval = setInterval( sendKeyCode.bind(null, code), keyInterval );
         }, keyTimeout );
 }
