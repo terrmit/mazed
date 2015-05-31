@@ -10,15 +10,15 @@ class Player(object):
         self.speed = speed
 
     def up(self):
-        if self.position.x - self.speed > 0:
-            self.position.x -= self.speed
+        if self.position.y - self.speed > 0:
+            self.position.y -= self.speed
 
     def down(self):
         if self.position.y + self.speed < self.size.y:
             self.position.y += self.speed
 
     def left(self):
-        if self.position.y - self.speed > 0:
+        if self.position.x - self.speed > 0:
             self.position.x -= self.speed
 
     def right(self):
