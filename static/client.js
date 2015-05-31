@@ -73,16 +73,16 @@ function initMaze() {
 function drawMaze() {
     for (var j = 0; j < maze.length; j++) {
         for (var i = 0; i < maze[j].length; i++) {
-            if (maze[j][i].up) {
+            if (maze[j][i][0]) {
                 line(i * cellSize, j * cellSize, (i + 1) * cellSize, j * cellSize);
             }
-            if (maze[j][i].down) {
+            if (maze[j][i][1]) {
                 line(i * cellSize, (j + 1) * cellSize, (i + 1) * cellSize, (j + 1) * cellSize);
             }
-            if (maze[j][i].left) {
+            if (maze[j][i][2]) {
                 line(i * cellSize, j * cellSize, i * cellSize, (j + 1) * cellSize);
             }
-            if (maze[j][i].right) {
+            if (maze[j][i][3]) {
                 line((i + 1) * cellSize, j * cellSize, (i + 1) * cellSize, (j + 1) * cellSize);
             }
         }
@@ -229,7 +229,7 @@ function draw() {
             var pos = {
                 x: clients[property].x * cellSize,
                 y: clients[property].y * cellSize   
-            }
+            };
             circle(pos.x, pos.y, cellSize / 2 - 2);
         }
     }

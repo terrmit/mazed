@@ -18,7 +18,7 @@ class Maze(np.ndarray):
 class MazeEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, MazeNode):
-            return {'up': obj.up, 'down': obj.down, 'left': obj.left, 'right': obj.right}
+            return [obj.up, obj.down, obj.left, obj.right]
         elif isinstance(obj, Maze):
             return obj.tolist()
         else:
