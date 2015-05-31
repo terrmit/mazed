@@ -1,8 +1,8 @@
 
 
-class XY(object):
+class YX(object):
     __slots__ = ['x', 'y']
 
-    def __init__(self, x=0, y=0):
-        self.x = x
+    def __init__(self, y=0, x=0):
         self.y = y
+        self.x = x

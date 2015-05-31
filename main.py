@@ -9,18 +9,18 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-from util import XY
+from util import YX
 from maze import MazeGenerator, MazeEncoder
 from player import Player
 
 clients = []
-SIZE = XY(x=60, y=60)
+SIZE = YX(y=60, x=60)
 MAZE = MazeGenerator(size=SIZE).maze
 
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        self.player = Player(uuid.uuid1(), SIZE, XY(SIZE.x / 2, SIZE.y / 2), speed=0.5)
+        self.player = Player(uuid.uuid1(), MAZE, YX(SIZE.y / 2, SIZE.x / 2,), speed=0.5)
         clients.append(self)
         for client in clients:
             client.write_message(self.player.to_json())

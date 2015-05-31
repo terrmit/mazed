@@ -1,11 +1,13 @@
 # coding: utf-8
 import json
+from util import YX
 
 
 class Player(object):
-    def __init__(self, id, size, position, speed):
+    def __init__(self, id, maze, position, speed):
         self.id = id
-        self.size = size
+        self.maze = maze
+        self.size = YX(*self.maze.shape)
         self.position = position
         self.speed = speed
 
