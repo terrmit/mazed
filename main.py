@@ -10,11 +10,12 @@ import tornado.web
 import tornado.websocket
 
 from util import XY
-from maze import MazeGenerator
+from maze import MazeGenerator, MazeEncoder
 from player import Player
 
 clients = []
 SIZE = XY(x=60, y=60)
+MAZE = MazeGenerator(size=SIZE).maze
 
 
 class WSHandler(tornado.websocket.WebSocketHandler):
@@ -41,16 +42,14 @@ class IndexHandler(tornado.web.RequestHandler):
 class MazeHandler(tornado.web.RequestHandler):
     def get(self):
         response = {
-            'size': len(mazeGenerator.maze),
-            'maze': mazeGenerator.maze,
+            'size': len(MAZE),
+            'maze': MAZE,
         }
-        self.write(json.dumps(response))
+        self.write(json.dumps(response, cls=MazeEncoder))
 
 settings = {
     'static_path': os.path.join(os.path.dirname(__file__), 'static'),
 }
-
-mazeGenerator = MazeGenerator(size=SIZE.x)
 
 application = tornado.web.Application([
     (r'/', IndexHandler),

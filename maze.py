@@ -1,36 +1,50 @@
 # coding: utf-8
 import random
+import json
+import numpy as np
+
+
+class MazeNode(object):
+    __slots__ = ['up', 'down', 'left', 'right']
+
+    def __init__(self):
+        self.up, self.down, self.left, self.right = False, False, False, False
+
+
+class Maze(np.ndarray):
+    pass
+
+
+class MazeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, MazeNode):
+            return {'up': obj.up, 'down': obj.down, 'left': obj.left, 'right': obj.right}
+        elif isinstance(obj, Maze):
+            return obj.tolist()
+        else:
+            return json.JSONEncoder.default(self, obj)
 
 
 class MazeGenerator(object):
 
-    def __init__(self, size=120, limit=100, chance=40):
-        self.size = size
+    def __init__(self, size, limit=100, chance=40):
+        self.size = size.x
         self.limit = limit
         self.chance = chance
-        self.maze = []
+        self.maze = Maze((size.x, size.y), dtype=object)
+        self.maze.flat = [MazeNode() for _ in self.maze.flat]
         self.generate()
 
     def generate(self):
         for i in xrange(self.size):
-            self.maze.append([])
-
-            for j in xrange(self.size):
-                self.maze[i].append({})
-                self.maze[i][j]['up'] = False
-                self.maze[i][j]['down'] = False
-                self.maze[i][j]['left'] = False
-                self.maze[i][j]['right'] = False
-
-        for i in xrange(self.size):
             if i != 0:
                 for j in xrange(self.size):
-                    self.maze[i][j]['up'] = self.maze[i - 1][j]['down']
+                    self.maze[i][j].up = self.maze[i - 1][j].down
             self.make_row(self.maze[i], i)
 
     def make_row(self, row, row_number):
-        row[0]['left'] = True
-        row[self.size - 1]['right'] = True
+        row[0].left = True
+        row[self.size - 1].right = True
         groups = self.make_mid_row(row)
 
         self.make_down_walls(row, groups)
@@ -38,10 +52,10 @@ class MazeGenerator(object):
         if row_number != self.size - 1:
             if not row_number:
                 for column_number in xrange(self.size):
-                    row[column_number]['up'] = True
+                    row[column_number].up = True
         else:
             for column_number in xrange(self.size):
-                row[column_number]['down'] = True
+                row[column_number].down = True
 
     def make_mid_row(self, row):
         groups = []
@@ -62,8 +76,8 @@ class MazeGenerator(object):
         for i in xrange(1, self.size):
             groups[i] = groups[i - 1]
             if random.randint(0, self.limit) > self.chance:
-                sells[i]['left'] = True
-                sells[i - 1]['right'] = True
+                sells[i].left = True
+                sells[i - 1].right = True
                 groups[i] += 1
 
     def make_down_wall(self, sells, left, right):
@@ -71,5 +85,5 @@ class MazeGenerator(object):
         k = 0
         for i in xrange(left, right + 1):
             if random.randint(0, self.limit) > self.chance and k < width - 1:
-                sells[i]['down'] = True
+                sells[i].down = True
                 k += 1
