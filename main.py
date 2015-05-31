@@ -20,7 +20,7 @@ MAZE = MazeGenerator(size=SIZE).maze
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        self.player = Player(uuid.uuid1(), MAZE, YX(SIZE.y / 2, SIZE.x / 2,), speed=0.5)
+        self.player = Player(uuid.uuid1(), MAZE, YX(SIZE.y / 2 + 0.5, SIZE.x / 2 + 0.5,), speed=0.5)
         clients.append(self)
         for client in clients:
             client.write_message(self.player.to_json())
