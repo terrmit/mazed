@@ -14,7 +14,7 @@ from maze import MazeGenerator
 from player import Player
 
 clients = []
-SIZE = XY(x=120, y=120)
+SIZE = XY(x=60, y=60)
 
 
 class WSHandler(tornado.websocket.WebSocketHandler):
