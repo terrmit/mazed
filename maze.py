@@ -2,6 +2,9 @@
 import random
 import json
 import numpy as np
+from copy import copy
+
+from util import *
 
 
 class MazeNode(object):
@@ -10,9 +13,72 @@ class MazeNode(object):
     def __init__(self):
         self.up, self.down, self.left, self.right = False, False, False, False
 
+    def __getitem__(self, key):
+        if key == -1:
+            return self.up
+        if key == 1:
+            return self.down
+        if key == -2:
+            return self.left
+        if key == 2:
+            return self.right
+
+    def __setitem__(self, key, value):
+        if key == -1:
+            self.up = value
+            return
+        if key == 1:
+            self.down = value
+            return
+        if key == -2:
+            self.left = value
+            return
+        if key == 2:
+            self.right = value
+            return
+
 
 class Maze(np.ndarray):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(Maze, self).__init__(args, kwargs)
+        self.rectangle = Rectangle(YX(), YX(*self.shape))
+
+    def get_new_position(self, position, direction):
+
+        tmp_direction = copy(direction)
+        new_position = copy(position)
+
+        dim = 1 if direction.y != 0 else 2
+
+        if position[dim + 1] != int(position[dim + 1]):
+            # we can't change direction in intermediate position
+            return new_position
+
+        if position[dim] != int(position[dim]):
+            # move player to the nearest absolute position
+            if tmp_direction[dim] > 0:
+                distance_to_abs = round_up(position[dim]) - position[dim]
+            else:
+                distance_to_abs = position[dim] - round_down(position[dim])
+            if abs(tmp_direction[dim]) > distance_to_abs:
+                tmp_direction[dim] = sign(tmp_direction[dim]) * (abs(tmp_direction[dim]) - distance_to_abs)
+                new_position[dim] += sign(tmp_direction[dim]) * distance_to_abs
+            else:
+                new_position[dim] += tmp_direction[dim]
+                return new_position
+
+        unit_direction = dim * sign(tmp_direction[dim])
+        for i in xrange(0, round_down(abs(tmp_direction[dim])) + 1):
+            i *= sign(tmp_direction[dim])
+            # do we hit a wall?
+            if (    dim == 1 and self[new_position.y + i][new_position.x][unit_direction]    ) or \
+                (   dim == 2 and self[new_position.y][new_position.x + i][unit_direction]    ):
+                new_position[dim] += i
+                return new_position
+
+        new_position[dim] += tmp_direction[dim]
+
+        return new_position
 
 
 class MazeEncoder(json.JSONEncoder):
