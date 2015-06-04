@@ -1,3 +1,4 @@
+# coding: utf-8
 
 class YX(object):
     __slots__ = ['x', 'y']
