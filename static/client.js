@@ -71,23 +71,37 @@ function initMaze() {
 }
 
 function drawMaze() {
+    ctx.strokeStyle = 'black';
     for (var j = 0; j < maze.length; j++) {
         for (var i = 0; i < maze[j].length; i++) {
-            if (maze[j][i][0]) {
+            if (maze[j][i].up) {
                 line(i * cellSize, j * cellSize, (i + 1) * cellSize, j * cellSize);
             }
-            if (maze[j][i][1]) {
+            if (maze[j][i].down) {
                 line(i * cellSize, (j + 1) * cellSize, (i + 1) * cellSize, (j + 1) * cellSize);
             }
-            if (maze[j][i][2]) {
+            if (maze[j][i].left) {
                 line(i * cellSize, j * cellSize, i * cellSize, (j + 1) * cellSize);
             }
-            if (maze[j][i][3]) {
+            if (maze[j][i].right) {
                 line((i + 1) * cellSize, j * cellSize, (i + 1) * cellSize, (j + 1) * cellSize);
             }
         }
     }
 }
+
+function drawArea() {
+    ctx.fillStyle = 'lightgray';
+    ctx.strokeStyle = 'lightgray';
+    for (var i = 0; i < mazeSize; i++) {
+        for (var j = 0; j < mazeSize; j++) {
+            if (area[i][j]) {
+                rect(i * cellSize, j * cellSize, cellSize, cellSize);
+            }
+        }
+    }
+}
+
 
 function getKeyCode(evt) {
     var code = null;
@@ -131,8 +145,8 @@ var keys = {
             interval: null
         }
     },
-    keyTimeout = 30,
-    keyInterval = 30;
+    keyTimeout = 50,
+    keyInterval = 50;
 
 function sendKeyCode( code ) {
     if ( !code ) return;
@@ -212,6 +226,7 @@ function handleWindowResize() {
 
 
 var clients = {};
+var area = [];
 
 
 function draw() {
@@ -220,10 +235,11 @@ function draw() {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 0.4;
     rect(0, 0, WIDTH, HEIGHT);
-    ctx.fillStyle = 'purple';
 
+    drawArea();
     drawMaze();
 
+    ctx.fillStyle = 'purple';
     for (var property in clients) {
         if (clients.hasOwnProperty(property)) {
             var pos = {
@@ -246,6 +262,7 @@ socket.onmessage = function(event) {
         x: player.x,
         y: player.y
     };
+    area = player.area;
     draw();
 };
 

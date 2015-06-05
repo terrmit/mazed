@@ -1,33 +1,31 @@
 # coding: utf-8
 import json
-from util import YX
+
+from config import conf
 
 
 class Player(object):
-    def __init__(self, id, maze, position, speed):
+    def __init__(self, id, position):
         self.id = id
-        self.maze = maze
         self.position = position
-        self.speed = speed
+        self.speed = conf.PLAYER_SPEED
 
-    def move(self, direction):
-        self.position = self.maze.get_new_position(self.position, direction)
+        size = conf.MAZE_SIZE
+        self.area = [[False for i in range(size)] for j in range(size)]
 
-    def up(self):
-        self.move(YX(y=-self.speed))
+    def move(self, delta):
+        self.position += delta
+        self.discover_area()
 
-    def down(self):
-        self.move(YX(y=self.speed))
-
-    def left(self):
-        self.move(YX(x=-self.speed))
-
-    def right(self):
-        self.move(YX(x=self.speed))
+    def discover_area(self):
+        x = int(round(self.position.x))
+        y = int(round(self.position.y))
+        self.area[x][y] = True
 
     def to_json(self):
         return json.dumps({
             'id': unicode(self.id),
             'x': self.position.x + 0.5,
             'y': self.position.y + 0.5,
+            'area': self.area,
         })
