@@ -54,10 +54,10 @@ class Game(object):
         player = self.players.get(player_id)
         delta = self._get_delta(player, direction)
 
-        if (delta.x and not player.position.x.is_integer() or
-                delta.y and not player.position.y.is_integer() or
-                player.position.x.is_integer() and 
-                player.position.y.is_integer() and
+        if (delta.x and player.position.x.denominator != 1 or
+                delta.y and player.position.y.denominator != 1 or
+                player.position.x.denominator == 1 and 
+                player.position.y.denominator == 1 and
                 not self.is_wall_on_way(player.position, delta)):
             
-            player.position += delta
+            player.move(delta)

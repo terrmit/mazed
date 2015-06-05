@@ -1,11 +1,13 @@
 # coding: utf-8
+from fractions import Fraction
+
 
 class Point(object):
     __slots__ = ['x', 'y']
 
-    def __init__(self, x=0.0, y=0.0):
-        self.x = float(x)
-        self.y = float(y)
+    def __init__(self, x=0, y=0):
+        self.x = Fraction(x)
+        self.y = Fraction(y)
 
     def __add__(self, another):
         return Point(self.x + another.x, self.y + another.y)
