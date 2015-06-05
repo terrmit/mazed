@@ -1,28 +1,20 @@
 # coding: utf-8
-import math
 import random
-import json
-import numpy as np
-from copy import copy
 
-from util import *
-
-
-DIRECTIONS = ('up', 'down', 'left', 'right')
+from config import conf
 
 
 class MazeGenerator(object):
 
-    def __init__(self, size, limit=100, chance=40):
+    def __init__(self, size):
         self.size = size
-        self.limit = limit
-        self.chance = chance
+        self.chance = conf.WALL_CHANCE
 
     def generate(self):
         self.maze = []
         for i in xrange(self.size):
             self.maze.append(
-                [{k: False for k in DIRECTIONS} for j in xrange(self.size)]
+                [{k: False for k in conf.DIRECTIONS} for j in xrange(self.size)]
             )
 
         for i in xrange(self.size):
@@ -64,7 +56,7 @@ class MazeGenerator(object):
     def make_left_walls(self, sells, groups):
         for i in xrange(1, self.size):
             groups[i] = groups[i - 1]
-            if random.randint(0, self.limit) > self.chance:
+            if random.random() > self.chance:
                 sells[i]['left'] = True
                 sells[i - 1]['right'] = True
                 groups[i] += 1
@@ -73,6 +65,6 @@ class MazeGenerator(object):
         width = right - left
         k = 0
         for i in xrange(left, right + 1):
-            if random.randint(0, self.limit) > self.chance and k < width - 1:
+            if random.random() > self.chance and k < width - 1:
                 sells[i]['down'] = True
                 k += 1

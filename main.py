@@ -12,6 +12,7 @@ import tornado.websocket
 from util import Point
 from game import Game
 from player import Player
+from config import conf
 
 
 clients = []
@@ -20,17 +21,21 @@ clients = []
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.game = Game()
+
         x = y = self.game.size / 2
         self.player = Player(uuid.uuid1(), Point(x, y))
         self.game.players[self.player.id] = self.player
+
         clients.append(self)
         for client in clients:
             client.write_message(self.player.to_json())
 
     def on_message(self, message):
-        if message not in ('up', 'down', 'left', 'right'):
+        if message not in conf.DIRECTIONS:
             return
+
         self.game.process_player_move(self.player.id, message)
+
         for client in clients:
             client.write_message(self.game.players[self.player.id].to_json())
 
@@ -47,22 +52,20 @@ class MazeHandler(tornado.web.RequestHandler):
     def get(self):
         maze = Game().maze
         response = {
-            'size': len(maze),
+            'size': conf.MAZE_SIZE,
             'maze': maze,
         }
         self.write(json.dumps(response))
 
 
-settings = {
-    'static_path': os.path.join(os.path.dirname(__file__), 'static'),
-}
+STATIC_PATH = os.path.join(os.path.dirname(__file__), 'static')
 
 
 application = tornado.web.Application([
     (r'/', IndexHandler),
     (r'/maze', MazeHandler),
     (r'/websocket', WSHandler),
-    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': settings['static_path']}),
+    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': STATIC_PATH}),
 ])
 
 

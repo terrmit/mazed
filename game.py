@@ -1,9 +1,7 @@
 # coding: utf-8
 from util import Point
 from maze import MazeGenerator
-
-
-SIZE = 40
+from config import conf
 
 
 class Game(object):
@@ -28,13 +26,13 @@ class Game(object):
         if self._initialized:
             return
 
-        self.size = SIZE
+        self.size = conf.MAZE_SIZE
         self.maze = self._get_maze()
         self.players = {}
         self._initialized = True
 
     def _get_maze(self):
-        mg = MazeGenerator(SIZE)
+        mg = MazeGenerator(self.size)
         mg.generate()
         return mg.maze
 

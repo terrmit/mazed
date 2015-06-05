@@ -1,19 +1,17 @@
 # coding: utf-8
 import json
-from fractions import Fraction
 
-from game import SIZE
-
-
-SPEED = Fraction(1, 5)
+from config import conf
 
 
 class Player(object):
     def __init__(self, id, position):
         self.id = id
         self.position = position
-        self.speed = SPEED
-        self.area = [[False for i in range(SIZE)] for j in range(SIZE)]
+        self.speed = conf.PLAYER_SPEED
+
+        size = conf.MAZE_SIZE
+        self.area = [[False for i in range(size)] for j in range(size)]
 
     def move(self, delta):
         self.position += delta
