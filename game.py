@@ -3,7 +3,7 @@ from util import Point
 from maze import MazeGenerator
 
 
-SIZE = 60
+SIZE = 40
 
 
 class Game(object):
