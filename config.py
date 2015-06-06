@@ -5,7 +5,7 @@ from fractions import Fraction
 class Config(object):
     DIRECTIONS = ('up', 'down', 'left', 'right')
     MAZE_SIZE = 40
-    PLAYER_SPEED = Fraction(1, 5)
+    PLAYER_SPEED = Fraction(1, 1)
     WALL_CHANCE = 0.4
 
 
