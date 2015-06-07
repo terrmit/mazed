@@ -90,9 +90,21 @@ function drawMaze() {
     }
 }
 
-function drawArea() {
-    ctx.fillStyle = 'lightgray';
-    ctx.strokeStyle = 'lightgray';
+function drawPlayer(player) {
+    ctx.fillStyle = 'purple';
+
+    drawArea(player.area);
+            
+    var pos = {
+        x: player.x * cellSize,
+        y: player.y * cellSize   
+    };
+    circle(pos.x, pos.y, cellSize / 2 - 2);
+}
+
+function drawArea(area) {
+    ctx.globalAlpha = 0.2;
+    ctx.lineWidth = 0.1;
     for (var i = 0; i < mazeSize; i++) {
         for (var j = 0; j < mazeSize; j++) {
             if (area[i][j]) {
@@ -100,6 +112,8 @@ function drawArea() {
             }
         }
     }
+    ctx.lineWidth = 0.4;
+    ctx.globalAlpha = 1;
 }
 
 
@@ -226,7 +240,6 @@ function handleWindowResize() {
 
 
 var clients = {};
-var area = [];
 
 
 function draw() {
@@ -236,19 +249,13 @@ function draw() {
     ctx.lineWidth = 0.4;
     rect(0, 0, WIDTH, HEIGHT);
 
-    drawArea();
-    drawMaze();
-
-    ctx.fillStyle = 'purple';
     for (var property in clients) {
         if (clients.hasOwnProperty(property)) {
-            var pos = {
-                x: clients[property].x * cellSize,
-                y: clients[property].y * cellSize   
-            };
-            circle(pos.x, pos.y, cellSize / 2 - 2);
+            drawPlayer(clients[property]);
         }
     }
+
+    drawMaze();
 }
 
 init();
@@ -258,11 +265,9 @@ socket = new WebSocket(new_uri);
 
 socket.onmessage = function(event) {
     var player = JSON.parse(event.data);
-    clients[player.id] = {
-        x: player.x,
-        y: player.y
-    };
-    area = player.area;
+
+    clients[player.id] = player;
+
     draw();
 };
 
