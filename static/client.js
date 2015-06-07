@@ -145,8 +145,8 @@ var keys = {
             interval: null
         }
     },
-    keyTimeout = 50,
-    keyInterval = 50;
+    keyTimeout = 200,
+    keyInterval = 200;
 
 function sendKeyCode( code ) {
     if ( !code ) return;
