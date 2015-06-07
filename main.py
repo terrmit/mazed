@@ -30,6 +30,11 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         for client in clients:
             client.write_message(self.player.to_json())
 
+        for _id, player in self.game.players.items():
+            if _id != self.player.id:
+                self.write_message(player.to_json())
+
+
     def on_message(self, message):
         if message not in conf.DIRECTIONS:
             return
